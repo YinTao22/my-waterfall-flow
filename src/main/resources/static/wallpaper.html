@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>壁纸页面</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .wallpaper {
+            width: 100%;
+            height: 100vh;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: rgba(51, 51, 51, 1);
+            position: relative; /* 添加相对定位 */
+        }
+
+        /* 添加遮罩 */
+        .wallpaper::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* 半透明黑色遮罩 */
+            z-index: 1;
+        }
+
+        /* 确保内容在遮罩之上 */
+        .wallpaper > div {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 左右布局容器 */
+        .container {
+            display: flex;
+            height: 80vh;
+        }
+
+        /* 左侧图片容器 */
+        .left-column {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 右侧文字容器 */
+        .right-column {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background-color: rgba(103, 99, 99, 0.2);
+            padding: 20px;
+        }
+
+        /* 图片样式 */
+        .left-column img {
+            max-width: 70%;
+            max-height: 70%;
+            border-radius: 10px;
+            padding-top: 0px;
+        }
+
+        /* 文字样式 */
+        .right-column p {
+            color: #ffffff;
+            font-size: 18px;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="wallpaper">
+    <div id="navbar"></div>
+
+    <div class="container">
+        <div class="left-column">
+            <img id="wallpaper-image" src="./images/jk.png" alt="壁纸图片">
+        </div>
+        <div class="right-column" th:each="image : ${images}">
+            <p id="wallpaper-description" th:text="${image.imageAlt}"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 获取URL参数中的背景图片URL
+    const params = new URLSearchParams(window.location.search);
+    const imageUrl = params.get('background');
+
+    // 设置背景图片
+    if (imageUrl) {
+        document.querySelector('.wallpaper').style.backgroundImage = `url(${decodeURIComponent(imageUrl)})`;
+        document.getElementById('wallpaper-image').src = decodeURIComponent(imageUrl);
+    }
+
+    // 动态加载导航栏
+    fetch('navbar.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('navbar').innerHTML = data;
+        });
+
+    // 设置壁纸描述
+    const description = params.get('description');
+    if (description) {
+        document.getElementById('wallpaper-description').textContent = decodeURIComponent(description);
+    }
+
+    // 点击能查看图片
+    var clipboard = new ClipboardJS('.text');
+    images_zoom();
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>连线挑战</title>
+    <style>
+        canvas {
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: #f0f0f0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="500"></canvas>
+<div id="status">点击第一个圆开始连线</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const statusDiv = document.getElementById('status');
+
+    // 游戏配置
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1'];
+    const circleRadius = 25;
+    const pointRadius = 5;
+
+    // 游戏状态
+    let circles = [];
+    let connections = [];
+    let selectedCircle = null;
+
+    // 生成初始布局
+    function initializeGame() {
+        circles = [];
+        connections = [];
+
+        // 生成三对圆
+        colors.forEach((color, index) => {
+            const areaWidth = canvas.width / 3;
+            const yBase = 100 + index * 120;
+
+            // 左侧圆
+            circles.push({
+                x: 50 + areaWidth * index,
+                y: yBase + Math.random() * 50,
+                color: color,
+                connected: false
+            });
+
+            // 右侧圆
+            circles.push({
+                x: canvas.width - 150 - areaWidth * index,
+                y: yBase + Math.random() * 50,
+                color: color,
+                connected: false
+            });
+        });
+
+        draw();
+    }
+
+    // 绘制元素
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 绘制连接线
+        connections.forEach(conn => {
+            ctx.beginPath();
+            ctx.moveTo(conn.start.x, conn.start.y);
+            ctx.lineTo(conn.end.x, conn.end.y);
+            ctx.strokeStyle = conn.color;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        });
+
+        // 绘制圆
+        circles.forEach(circle => {
+            ctx.beginPath();
+            ctx.arc(circle.x, circle.y, circleRadius, 0, Math.PI * 2);
+            ctx.fillStyle = circle.color + '80'; // 半透明
+            ctx.fill();
+
+            // 绘制中心点
+            ctx.beginPath();
+            ctx.arc(circle.x, circle.y, pointRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#333';
+            ctx.fill();
+        });
+
+        // 绘制选中状态
+        if (selectedCircle) {
+            ctx.beginPath();
+            ctx.arc(selectedCircle.x, selectedCircle.y, circleRadius + 3, 0, Math.PI * 2);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    }
+
+    // 线段交叉检测
+    function linesIntersect(a1, a2, b1, b2) {
+        const ccw = (A,B,C) => (C.y-A.y)*(B.x-A.x) > (B.y-A.y)*(C.x-A.x);
+        return ccw(a1,b1,b2) != ccw(a2,b1,b2) && ccw(a1,a2,b1) != ccw(a1,a2,b2);
+    }
+
+    // 点击处理
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // 查找点击的圆
+        const clickedCircle = circles.find(circle =>
+            Math.hypot(circle.x - mouseX, circle.y - mouseY) < circleRadius
+        );
+
+        if (!clickedCircle) return;
+
+        if (selectedCircle) {
+            // 尝试连接
+            if (selectedCircle.color === clickedCircle.color &&
+                selectedCircle !== clickedCircle &&
+                !clickedCircle.connected) {
+
+                const newConnection = {
+                    start: selectedCircle,
+                    end: clickedCircle,
+                    color: selectedCircle.color
+                };
+
+                // 检查是否与其他连线交叉
+                const hasCollision = connections.some(conn =>
+                    linesIntersect(
+                        newConnection.start, newConnection.end,
+                        conn.start, conn.end
+                    )
+                );
+
+                if (!hasCollision) {
+                    connections.push(newConnection);
+                    selectedCircle.connected = true;
+                    clickedCircle.connected = true;
+                    statusDiv.textContent = '连接成功！继续连接其他颜色';
+                } else {
+                    statusDiv.textContent = '连线交叉！请重新选择';
+                }
+            }
+            selectedCircle = null;
+        } else if (!clickedCircle.connected) {
+            selectedCircle = clickedCircle;
+            statusDiv.textContent = '已选择起点，请点击同色终点';
+        }
+
+        // 检查胜利条件
+        if (connections.length === colors.length) {
+            statusDiv.textContent = '🎉 恭喜！所有连接完成！';
+        }
+
+        draw();
+    });
+
+    // 开始游戏
+    initializeGame();
+</script>
+</body>
+</html>
