@@ -1,0 +1,83 @@
+:root {
+    --primary-color: #2d3436;
+    --accent-color: #0984e3;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+}
+
+.glass-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    position: relative;
+}
+
+/* 左侧Logo */
+.logo-container {
+    flex: 0 1 auto;
+    order: 1;
+}
+
+/* 中间导航菜单 */
+.nav-menu {
+    flex: 1 1 auto;
+    order: 2;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.nav-list {
+    justify-content: center;
+    gap: 2rem;
+}
+
+/* 右侧登录按钮 */
+.auth-container {
+    flex: 0 1 auto;
+    order: 3;
+    margin-left: auto;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .glass-navbar {
+        padding: 1rem;
+    }
+
+    .nav-menu {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background: var(--glass-bg);
+        padding: 2rem;
+        transition: left 0.3s;
+        margin: 0;
+    }
+
+    .nav-menu.active {
+        left: 0;
+    }
+
+    .auth-container {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-text {
+        display: none;
+    }
+
+    .auth-button .btn-text {
+        display: none;
+    }
+
+    .auth-button {
+        padding: 0.8rem;
+        min-width: auto;
+    }
+}
+
+/* 保持其他原有样式不变 */

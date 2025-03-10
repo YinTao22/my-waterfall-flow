@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="./images/login.jpg">
+  <title>登录和注册</title>
+  <link rel="stylesheet" href="css/login.css">
+
+</head>
+
+<body>
+<div id="navbar"></div>
+<div class="container right-panel-active">
+  <!-- Sign Up  注册表单-->
+  <div class="container__form container--signup">
+    <form action="/register" class="form" method="post" id="form1">
+      <h2 class="form__title">Sign Up</h2>
+      <input type="text" placeholder="User" class="input" id="username" name="username"/>
+      <input type="email" placeholder="Email" class="input" id="email" name="email"/>
+      <input type="password" placeholder="Password" class="input" id="password" name="password" />
+      <button class="btn" type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <!-- Sign In  登录表单-->
+  <div class="container__form container--signin">
+    <form action="/login"  method="post" class="form" id="loginForm">
+      <h2 class="form__title">Login</h2>
+      <input type="text" placeholder="name" class="input" required="" name="username"  />
+      <input type="password" placeholder="Password" class="input" required="" name="password"  />
+      <a href="./adminPages.html" class="link">开发/管理员登录</a>
+      <button class="btn" type="submit">Login</button>
+    </form>
+  </div>
+
+  <!-- Overlay -->
+  <div class="container__overlay">
+    <div class="overlay">
+      <div class="overlay__panel overlay--left">
+        <button class="btn" id="signIn">Login</button>
+      </div>
+      <div class="overlay__panel overlay--right">
+        <button class="btn" id="signUp">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="./js/jquery-3.7.1.min.js"></script>
+<script src="./js/SigninPages.js"></script>
+<script src="./js/LoginPages.js"></script>
+<script>
+  const signInBtn = document.getElementById("signIn");
+  const signUpBtn = document.getElementById("signUp");
+
+  const secondForm = document.getElementById("loginForm");
+  const fistForm = document.getElementById("form1");
+  const container = document.querySelector(".container");
+
+  signInBtn.addEventListener("click", () => {
+    container.classList.remove("right-panel-active");
+  });
+
+  signUpBtn.addEventListener("click", () => {
+    container.classList.add("right-panel-active");
+  });
+
+  fistForm.addEventListener("submit", (e) => e.preventDefault());
+  secondForm.addEventListener("submit", (e) => e.preventDefault());
+
+  // 动态加载导航栏
+  fetch('navbar.html')
+          .then(response => response.text())
+          .then(data => {
+            document.getElementById('navbar').innerHTML = data;
+          });
+
+  // 隐藏登录/注册链接
+  window.onload = function() {
+    const currentPath = window.location.pathname;
+    const userMenuLink = document.getElementById('user-menu-link');
+
+    if (currentPath === './login.html' ) {
+      userMenuLink.style.display = 'none';
+    }
+  };
+</script>
+
+</body>
+
+</html>

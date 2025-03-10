@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>优雅渐变导航栏</title>
+    <style>
+        :root {
+            --gradient-start: #6366f1;  /* 柔和的紫色 */
+            --gradient-end: #ec4899;   /* 粉红色 */
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --text-light: #f8fafc;
+            --accent-color: #fcd34d;   /* 点缀色 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: #f8fafc;  /* 浅灰背景 */
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo a {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            transition: transform 0.3s;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+
+        nav a:hover {
+            color: var(--accent-color);
+        }
+
+        nav a:hover::before {
+            width: 80%;
+        }
+
+        .auth-buttons .login {
+            background: var(--glass-bg);
+            color: var(--text-light);
+            padding: 0.75rem 1.5rem;
+            border-radius: 999px;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            margin-left: auto; /* 新增关键属性 */
+            padding-right: 1rem; /* 添加右边距 */
+        }
+
+        .auth-buttons .login::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent
+            );
+            transition: left 0.6s;
+        }
+
+        .auth-buttons .login:hover::after {
+            left: 100%;
+        }
+
+        /* 新增弹性布局控制 */
+        header {
+            display: flex;
+            align-items: center;
+            gap: 2rem; /* 元素间距 */
+        }
+
+        .logo {
+            flex-shrink: 0; /* 防止logo被压缩 */
+        }
+
+        nav {
+            flex: 1; /* 占据剩余空间 */
+        }
+
+        /* 桌面端优化 */
+        @media (min-width: 769px) {
+            .auth-buttons {
+                margin-left: auto;
+                display: flex;
+                gap: 1rem;
+            }
+
+            nav {
+                margin-left: 2rem; /* 导航菜单左间距 */
+            }
+        }
+
+        /* 移动端样式优化 */
+        @media (max-width: 768px) {
+            nav {
+                background: linear-gradient(135deg,
+                rgba(99, 102, 241, 0.95),
+                rgba(236, 72, 153, 0.95)
+                );
+
+            }
+
+            nav a {
+                color: #fff;
+                font-size: 1.2rem;
+                padding: 1rem;
+            }
+
+            .overlay {
+                background: rgba(0, 0, 0, 0.5);
+            }
+
+            .hamburger span {
+                background: #fff;
+            }
+        }
+
+        /* 新增细节动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .logo a:hover {
+            animation: float 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- 保持相同的HTML结构 -->
+<header>
+    <div class="logo">
+        <a href="#">T🧐</a>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="./">首页</a></li>
+            <li><a href="https://www.deepseek.com/">灵境</a></li>
+            <li><a href="https://github.com/YinTao22">Github</a></li>
+        </ul>
+    </nav>
+
+    <div class="auth-buttons">
+        <a href="./loading.html" class="login">登录/注册</a>
+    </div>
+
+    <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="overlay" onclick="toggleMenu()"></div>
+</header>
+
+<script>
+    // 保持相同的JavaScript功能
+    function toggleMenu() {
+        const nav = document.querySelector('nav');
+        const hamburger = document.querySelector('.hamburger');
+        const overlay = document.querySelector('.overlay');
+
+        nav.classList.toggle('active');
+        hamburger.classList.toggle('active');
+        overlay.style.display = nav.classList.contains('active') ? 'block' : 'none';
+    }
+
+    document.querySelector('.overlay').addEventListener('click', toggleMenu);
+</script>
+</body>
+</html>

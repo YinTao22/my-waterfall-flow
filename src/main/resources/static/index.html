@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>愿此行，终抵群星</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="./images/jk.png">
+
+    <script src="./js/yall.min.js"></script>
+    <script src="./js/medium-zoom.min.js"></script>
+    <script src="./js/clipboard.min.js"></script>
+    <script src="./js/Waterfall.js"></script>
+    <link rel="stylesheet" href="css/Waterfall.css">
+
+</head>
+<body>
+<div id="navbar"></div>
+
+<div class="grid-container" style="columns:4">
+    <div id="gallery">
+        <!-- 使用 Thymeleaf 迭代后端返回的图片数据 -->
+        <div th:each="image : ${images}" class="block">
+            <img class="yall_lazy" th:attr="data-src=${image.imageUrl}" th:alt="${image.imageAlt}">
+            <span class="hover-text" onclick="goToWallpaperIndex()">前往</span>
+        </div>
+    </div>
+    <script src="./js/index.js"></script>
+</div>
+</body>
+</html>

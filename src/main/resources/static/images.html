@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片上传</title>
+  <link rel="stylesheet" href="css/imageStyle.css">
+</head>
+<body>
+<!-- 粒子背景画布 -->
+<canvas id="canvas"></canvas>
+<div class="container">
+  <input type="file" id="fileInput" accept="image/*">
+  <input type="text" id="userInput" name="userInput" placeholder="好看吗？美女，嘻嘻" required>
+  <button onclick="uploadImage()">上传</button>
+</div>
+<!--上传图片-->
+<script>
+  // 动态粒子背景
+  (function() {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const particleCount = 100;
+
+    // 设置画布尺寸
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // 粒子类
+    class Particle {
+      constructor() {
+        this.reset();
+        this.velocity = {
+          x: (Math.random() - 0.5) * 0.5,
+          y: (Math.random() - 0.5) * 0.5
+        };
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.color = `hsl(${Math.random() * 360}, 70%, 50%)`;
+      }
+
+      update(mouse) {
+        if(mouse.x && mouse.y) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if(distance < 100) {
+            this.x -= dx * 0.01;
+            this.y -= dy * 0.01;
+          }
+        }
+
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
+
+        if(this.x > canvas.width + 20 || this.x < -20) this.velocity.x *= -1;
+        if(this.y > canvas.height + 20 || this.y < -20) this.velocity.y *= -1;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    // 初始化粒子
+    function init() {
+      particles = [];
+      for(let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    // 动画循环
+    let mouse = { x: null, y: null };
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(particle => {
+        particle.update(mouse);
+        particle.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    // 鼠标移动监听
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+    });
+
+    // 鼠标离开时重置
+    window.addEventListener('mouseout', () => {
+      mouse.x = undefined;
+      mouse.y = undefined;
+    });
+
+    // 启动
+    init();
+    animate();
+  })();
+
+  async function uploadImage() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    const userInput = document.getElementById('userInput').value; // 获取文本框中的输入
+
+    if (!file) {
+      alert('请选择文件');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('text',userInput);
+    try {
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        alert('上传成功');
+        fileInput.value = ''; // 清空文件选择
+        userInput.value = '';
+        fetchImages(); // 刷新图片列表
+
+      } else {
+        alert('上传失败');
+      }
+    } catch (error) {
+      console.error('上传失败', error);
+    }
+  }
+
+</script>
+</body>
+</html>
