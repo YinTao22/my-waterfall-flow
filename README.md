@@ -2,7 +2,7 @@
 图片瀑布流，展示图片 springboot mysql javascript
 
 # 项目部署
-
+参考了此项目：https://github.com/xieleihan/demo-Java-EE-Project.git 并在此项目上进行更改
 ## 第一步:克隆项目在本地
 ```text
 git clone https://github.com/YinTao22/my-waterfall-flow.git
